@@ -4,6 +4,11 @@
 #include "ClipboardLib_global.h"
 #include <QImage>
 
+typedef struct StrList{
+    char **list;
+    int64_t size;
+}StrList;
+
 #define EXPORT extern "C" __declspec(dllexport)
 
 class CLIPBOARDLIB_EXPORT Clipboard
@@ -19,6 +24,7 @@ public:
     static QString getText();
     static QString getRichText();
     static QImage getImage();
+    static QStringList getUrls();
 };
 
 #ifdef Q_OS_WIN
@@ -38,6 +44,7 @@ EXPORT void setText(char *text);
 EXPORT void setRichText(const char* html);
 EXPORT char* getText();
 EXPORT char* getRichText();
-EXPORT bool getImage(int *);
+EXPORT char* getImage(long long *size);
+EXPORT StrList getFiles();
 
 #endif // CLIPBOARDLIB_H

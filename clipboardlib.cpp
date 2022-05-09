@@ -3,6 +3,8 @@
 #include <QClipboard>
 #include <QMimeData>
 #include <QDebug>
+#include <QBuffer>
+#include <QUrl>
 
 Clipboard::Clipboard()
 {
@@ -56,7 +58,6 @@ QString Clipboard::getRichText()
 {
    QClipboard* clipboard = QGuiApplication::clipboard();
    QString html = clipboard->mimeData()->html();
-   qDebug() << "html: " << html;
    return html;
 }
 
@@ -64,6 +65,16 @@ QImage Clipboard::getImage()
 {
     QClipboard* clipboard = QGuiApplication::clipboard();
     return clipboard->image();
+}
+
+QStringList Clipboard::getUrls()
+{
+    QStringList strList;
+    QClipboard* clipboard = QGuiApplication::clipboard();
+    for(QUrl url : clipboard->mimeData()->urls()){
+        strList.append(url.toString());
+    }
+    return strList;
 }
 
 //C function
@@ -87,16 +98,16 @@ EXPORT char* getRichText()
 {
     QString html = Clipboard::getRichText();
     auto strHtml = html.toStdString();
+    qDebug() << "Qt html:" << strHtml.c_str();
     return strdup(strHtml.c_str());
 }
 
 EXPORT char *getText()
 {
     QString text = Clipboard::getText();
-    qInfo() << "Qt text: " << text;
-    auto str = text.toStdString();
-    qInfo() << "str: " << str.c_str();
-    return strdup(str.c_str());
+    auto strText = text.toStdString();
+    qDebug() << "Qt text:" << strText.c_str();
+    return strdup(strText.c_str());
 }
 
 bool hasImage()
@@ -117,4 +128,35 @@ bool hasText()
 bool hasUrls()
 {
     return Clipboard::hasUrls();
+}
+
+char *getImage(long long *size)
+{
+    QImage image = Clipboard::getImage();
+    if(image.isNull())
+        return nullptr;
+    QByteArray byteArray;
+    QBuffer buffer(&byteArray);
+    image.save(&buffer, "PNG");
+    size_t iSize = buffer.size();
+    if(iSize <= 0)
+        return nullptr;
+    qDebug() << "Qt image size:" << iSize;
+    char* data = byteArray.data();
+    char* newBuffer = (char*)malloc(iSize);
+    memcpy(newBuffer, data, iSize);
+    *size = iSize;
+    return newBuffer;
+}
+
+StrList getFiles()
+{
+    StrList strList;
+    const QStringList& urls = Clipboard::getUrls();
+    strList.size = urls.size();
+    strList.list = (char**)malloc(sizeof(char*) * urls.size());
+    for(int i = 0; i < urls.size(); i++){
+        strList.list[i] = strdup(urls.at(i).toStdString().c_str());
+    }
+    return strList;
 }
