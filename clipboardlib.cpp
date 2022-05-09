@@ -141,7 +141,8 @@ char *getImage(long long *size)
     size_t iSize = buffer.size();
     if(iSize <= 0)
         return nullptr;
-    qDebug() << "Qt image size:" << iSize;
+    qDebug() << "Qt image size:" <<image.size();
+    qDebug() << "Qt buffer size:" << iSize;
     char* data = byteArray.data();
     char* newBuffer = (char*)malloc(iSize);
     memcpy(newBuffer, data, iSize);
