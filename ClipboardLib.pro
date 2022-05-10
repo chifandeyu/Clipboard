@@ -26,7 +26,8 @@ SOURCES += \
 
 HEADERS += \
     ClipboardLib_global.h \
-    clipboardlib.h
+    clipboardlib.h \
+    export.h
 
 # Default rules for deployment.
 unix {

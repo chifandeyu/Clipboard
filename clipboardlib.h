@@ -2,14 +2,13 @@
 #define CLIPBOARDLIB_H
 
 #include "ClipboardLib_global.h"
+#include "export.h"
 #include <QImage>
 
 typedef struct StrList{
     char **list;
     int64_t size;
 }StrList;
-
-#define EXPORT extern "C" __declspec(dllexport)
 
 class CLIPBOARDLIB_EXPORT Clipboard
 {
@@ -26,14 +25,6 @@ public:
     static QImage getImage();
     static QStringList getUrls();
 };
-
-#ifdef Q_OS_WIN
-#include <Windows.h>
-BOOL WINAPI DllMain( HINSTANCE hInstance, DWORD dwReason, LPVOID /*lpvReserved*/ );
-
-#elif Q_OS_MACOS
-
-#endif
 
 EXPORT bool hasImage();
 EXPORT bool hasRichText();
