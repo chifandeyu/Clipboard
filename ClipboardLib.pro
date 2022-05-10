@@ -4,10 +4,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TEMPLATE = lib
 DEFINES += CLIPBOARDLIB_LIBRARY
-
+TARGET=ClipboardLib
 CONFIG += c++11
-
-include(./qtwinmigrate/src/qtwinmigrate.pri)
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -30,6 +28,9 @@ HEADERS += \
     export.h
 
 # Default rules for deployment.
+win32 {
+include(./qtwinmigrate/src/qtwinmigrate.pri)
+}
 unix {
     target.path = /usr/lib
 }
